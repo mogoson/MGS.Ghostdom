@@ -46,7 +46,7 @@ namespace MGS.Ghostdoms
 
         #region
         [SerializeField]
-        protected Collection collection;
+        protected Collector collector;
 
         [SerializeField]
         protected InputField searchField;
@@ -104,7 +104,7 @@ namespace MGS.Ghostdoms
 
             if (levels.Contains(log.level) && message.Contains(keyword))
             {
-                var txt = collection.CreateItem<Text>();
+                var txt = collector.CreateItem<Text>();
                 RefreshItem(txt, log);
             }
         }
@@ -138,7 +138,7 @@ namespace MGS.Ghostdoms
         protected void ClearLog()
         {
             logs.Clear();
-            collection.RequireItems(logs.Count);
+            collector.RequireItems(logs.Count);
         }
 
         protected void Refresh(List<Log> logs)
@@ -147,12 +147,12 @@ namespace MGS.Ghostdoms
             {
                 logs.RemoveAt(0);
             }
-            collection.RequireItems(logs.Count);
+            collector.RequireItems(logs.Count);
 
             var i = 0;
             foreach (var log in logs)
             {
-                var txt = collection.GetItem<Text>(i);
+                var txt = collector.GetItem<Text>(i);
                 RefreshItem(txt, log);
                 i++;
             }

@@ -40,21 +40,10 @@ namespace MGS.Ghostdoms
         protected virtual void Awake()
         {
             cerberus.OnHeadShake += Cerberus_OnHeadShake;
+            aeacus.OnGOSelected += Aeacus_OnGOSelected;
             minos.OnSizeChanged += Minos_OnSizeChanged;
 
             FitToLayout(layouts[layout]);
-        }
-
-        protected void FitToLayout(Vector3 layout)
-        {
-            var rect = (aeacus.transform.parent as RectTransform).rect;
-            var aeacusWidth = rect.width * layout.x;
-            var rhadamanthysWidth = rect.width * layout.y;
-            aeacus.SetSize(RectTransform.Axis.Horizontal, aeacusWidth);
-            rhadamanthys.SetSize(RectTransform.Axis.Horizontal, rhadamanthysWidth);
-
-            var minosHeight = rect.height * layout.z;
-            minos.SetSize(RectTransform.Axis.Vertical, minosHeight);
         }
 
         protected void Cerberus_OnHeadShake(Cerberus.HeadID headID)
@@ -78,7 +67,7 @@ namespace MGS.Ghostdoms
                     minos.gameObject.SetActive(!minos.gameObject.activeSelf);
                     break;
 
-                case Cerberus.HeadID.Head_Pomegranate:
+                case Cerberus.HeadID.Head_Trident:
                     {
                         layout++;
                         if (layout >= layouts.Count)
@@ -91,6 +80,11 @@ namespace MGS.Ghostdoms
             }
         }
 
+        protected void Aeacus_OnGOSelected(GameObject go, bool isSelect)
+        {
+            Debug.LogFormat("Aeacus_OnGOSelected {0} {1}", go.name, isSelect);
+        }
+
         protected void Minos_OnSizeChanged(RectTransform.Axis axis, float size)
         {
             if (axis == RectTransform.Axis.Vertical)
@@ -100,6 +94,18 @@ namespace MGS.Ghostdoms
                 aeacus.SetSize(RectTransform.Axis.Vertical, aeacusHeight);
                 rhadamanthys.SetSize(RectTransform.Axis.Vertical, aeacusHeight);
             }
+        }
+
+        protected void FitToLayout(Vector3 layout)
+        {
+            var rect = (aeacus.transform.parent as RectTransform).rect;
+            var aeacusWidth = rect.width * layout.x;
+            var rhadamanthysWidth = rect.width * layout.y;
+            aeacus.SetSize(RectTransform.Axis.Horizontal, aeacusWidth);
+            rhadamanthys.SetSize(RectTransform.Axis.Horizontal, rhadamanthysWidth);
+
+            var minosHeight = rect.height * layout.z;
+            minos.SetSize(RectTransform.Axis.Vertical, minosHeight);
         }
     }
 }

@@ -24,7 +24,7 @@ namespace MGS.Ghostdoms
             Head_Rhadamanthys,
             Head_Lyre,
             Head_Minos,
-            Head_Pomegranate
+            Head_Trident
         }
 
         public event Action<HeadID> OnHeadShake;

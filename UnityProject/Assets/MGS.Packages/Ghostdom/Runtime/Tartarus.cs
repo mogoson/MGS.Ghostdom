@@ -29,6 +29,7 @@ namespace MGS.Ghostdoms
                 var prefab = Resources.Load<Ghostdom>("Ghostdom");
                 eyes = Object.Instantiate(prefab);
             }
+            //eyes.gameObject.hideFlags = HideFlags.HideInHierarchy;
             Object.DontDestroyOnLoad(eyes);
 
             var eSys = Object.FindObjectOfType<EventSystem>();

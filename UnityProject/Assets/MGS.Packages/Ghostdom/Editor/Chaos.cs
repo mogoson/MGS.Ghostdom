@@ -18,18 +18,18 @@ namespace MGS.Ghostdoms.Editors
 {
     public class Chaos
     {
-        [MenuItem("Tool/Tartarus/Active")]
+        [MenuItem("Tool/Ghostdom/Active")]
         static void Active()
         {
             Reshape(true);
-            Debug.Log("Tartarus is actived.");
+            Debug.Log("Ghostdom is actived.");
         }
 
-        [MenuItem("Tool/Tartarus/Inactive")]
+        [MenuItem("Tool/Ghostdom/Inactive")]
         static void Inactive()
         {
             Reshape(false);
-            Debug.Log("Tartarus is inactived.");
+            Debug.Log("Ghostdom is inactived.");
         }
 
         static void Reshape(bool isActive)

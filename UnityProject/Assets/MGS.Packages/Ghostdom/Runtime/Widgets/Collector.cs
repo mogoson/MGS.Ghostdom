@@ -1,7 +1,7 @@
 ﻿/*************************************************************************
  *  Copyright © 2022 Mogoson. All rights reserved.
  *------------------------------------------------------------------------
- *  File         :  Collection.cs
+ *  File         :  Collector.cs
  *  Description  :  Null.
  *------------------------------------------------------------------------
  *  Author       :  Mogoson
@@ -14,32 +14,31 @@ using UnityEngine;
 
 namespace MGS.Ghostdoms
 {
-    public class Collection : MonoBehaviour
+    public class Collector : MonoBehaviour
     {
-        [SerializeField]
-        protected GameObject prefab;
+        public GameObject prefab;
 
         [SerializeField]
-        protected Transform collection;
+        protected Transform locker;
 
         public void RequireItems(int count)
         {
-            var items = collection.childCount - 1;
+            var items = locker.childCount - 1;
             while (items > count)
             {
-                Destroy(collection.GetChild(items).gameObject);
+                Destroy(locker.GetChild(items).gameObject);
                 items--;
             }
             while (items < count)
             {
-                Instantiate(prefab, collection);
+                Instantiate(prefab, locker);
                 items++;
             }
         }
 
         public GameObject CreateItem()
         {
-            return Instantiate(prefab, collection);
+            return Instantiate(prefab, locker);
         }
 
         public T CreateItem<T>()
@@ -49,7 +48,7 @@ namespace MGS.Ghostdoms
 
         public GameObject GetItem(int index)
         {
-            return collection.GetChild(index + 1).gameObject;
+            return locker.GetChild(index + 1).gameObject;
         }
 
         public T GetItem<T>(int index)
