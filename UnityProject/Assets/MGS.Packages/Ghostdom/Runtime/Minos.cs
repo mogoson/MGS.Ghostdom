@@ -61,24 +61,9 @@ namespace MGS.Ghostdoms
         protected override void Awake()
         {
             base.Awake();
+
             Application.logMessageReceived += Application_logMessageReceived;
             searchField.onValueChanged.AddListener(SearchField_OnValueChanged);
-
-            Debug.Log("十大科技孵化时刻记得发货的就是房价多少");
-            Debug.Log("时空距离东京覅偶尔物体飞机还是关键是");
-            Debug.LogWarning("欧维欧俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd欧维欧俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd欧维欧俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd欧维欧俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd欧维欧俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd欧维欧俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd欧维欧俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd欧维欧俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd fhdsjhfdsjk fdhsjfhdskjhfdjksh ");
-            Debug.LogError("欧维欧sdkljfksdjfk jdksfhjsdh   iouioteurio vcmnbmc njdfo 俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd fhdsjhfdsjk fdhsjfhdskjhfdjksh ");
-        }
-
-        protected void Application_logMessageReceived(string condition, string stackTrace, LogType type)
-        {
-            AppendLog(type.ToString(), string.Format("{0}\r\n{1}", condition, stackTrace.TrimEnd()));
-        }
-
-        protected void SearchField_OnValueChanged(string text)
-        {
-            keyword = text;
-            FilterLog(levels, keyword);
         }
 
         protected override void Toolbar_OnButtonClick(string btnName)
@@ -101,6 +86,17 @@ namespace MGS.Ghostdoms
             }
         }
 
+        protected void Application_logMessageReceived(string condition, string stackTrace, LogType type)
+        {
+            AppendLog(type.ToString(), string.Format("{0}\r\n{1}", condition, stackTrace.TrimEnd()));
+        }
+
+        protected void SearchField_OnValueChanged(string text)
+        {
+            keyword = text;
+            FilterLog(levels, keyword);
+        }
+
         protected void AppendLog(string level, string message)
         {
             var log = new Log(level, message);
@@ -111,12 +107,6 @@ namespace MGS.Ghostdoms
                 var txt = collection.CreateItem<Text>();
                 RefreshItem(txt, log);
             }
-        }
-
-        protected void ClearLog()
-        {
-            logs.Clear();
-            collection.RequireItems(logs.Count);
         }
 
         protected void FilterLevel(string level)
@@ -145,18 +135,20 @@ namespace MGS.Ghostdoms
             Refresh(selects);
         }
 
+        protected void ClearLog()
+        {
+            logs.Clear();
+            collection.RequireItems(logs.Count);
+        }
+
         protected void Refresh(List<Log> logs)
         {
-            while (logs.Count > 100)
+            while (logs.Count > 1000)
             {
                 logs.RemoveAt(0);
             }
             collection.RequireItems(logs.Count);
-            RefreshItems(logs);
-        }
 
-        protected void RefreshItems(List<Log> logs)
-        {
             var i = 0;
             foreach (var log in logs)
             {
