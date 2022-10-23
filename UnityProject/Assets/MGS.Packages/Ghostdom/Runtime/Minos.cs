@@ -48,6 +48,10 @@ namespace MGS.Ghostdoms
         [SerializeField]
         protected Collection collection;
 
+        [SerializeField]
+        protected InputField searchField;
+        protected string keyword = string.Empty;
+
         protected List<Log> logs = new List<Log>();
         protected List<string> levels = new List<string>
         {
@@ -58,11 +62,23 @@ namespace MGS.Ghostdoms
         {
             base.Awake();
             Application.logMessageReceived += Application_logMessageReceived;
+            searchField.onValueChanged.AddListener(SearchField_OnValueChanged);
+
+            Debug.Log("十大科技孵化时刻记得发货的就是房价多少");
+            Debug.Log("时空距离东京覅偶尔物体飞机还是关键是");
+            Debug.LogWarning("欧维欧俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd欧维欧俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd欧维欧俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd欧维欧俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd欧维欧俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd欧维欧俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd欧维欧俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd欧维欧俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd fhdsjhfdsjk fdhsjfhdskjhfdjksh ");
+            Debug.LogError("欧维欧sdkljfksdjfk jdksfhjsdh   iouioteurio vcmnbmc njdfo 俄日欧恩科进士更加快速返回结果我shdfjhsdjkfhjsd fhdsjhfdsjk fdhsjfhdskjhfdjksh ");
         }
 
         protected void Application_logMessageReceived(string condition, string stackTrace, LogType type)
         {
             AppendLog(type.ToString(), string.Format("{0}\r\n{1}", condition, stackTrace.TrimEnd()));
+        }
+
+        protected void SearchField_OnValueChanged(string text)
+        {
+            keyword = text;
+            FilterLog(levels, keyword);
         }
 
         protected override void Toolbar_OnButtonClick(string btnName)
@@ -76,7 +92,7 @@ namespace MGS.Ghostdoms
                 case LogLevel.Log:
                 case LogLevel.Warning:
                 case LogLevel.Error:
-                    FilterLog(btnName);
+                    FilterLevel(btnName);
                     break;
 
                 default:
@@ -90,7 +106,7 @@ namespace MGS.Ghostdoms
             var log = new Log(level, message);
             logs.Add(log);
 
-            if (levels.Contains(log.level))
+            if (levels.Contains(log.level) && message.Contains(keyword))
             {
                 var txt = collection.CreateItem<Text>();
                 RefreshItem(txt, log);
@@ -103,29 +119,30 @@ namespace MGS.Ghostdoms
             collection.RequireItems(logs.Count);
         }
 
-        protected void FilterLog(string type)
+        protected void FilterLevel(string level)
         {
-            if (levels.Contains(type))
+            if (levels.Contains(level))
             {
-                levels.Remove(type);
+                levels.Remove(level);
             }
             else
             {
-                levels.Add(type);
+                levels.Add(level);
             }
+            FilterLog(levels, keyword);
+        }
 
-            if (logs.Count > 0)
+        protected void FilterLog(List<string> levels, string keyword)
+        {
+            var selects = new List<Log>();
+            foreach (var log in logs)
             {
-                var selects = new List<Log>();
-                foreach (var log in logs)
+                if (levels.Contains(log.level) && log.message.Contains(keyword))
                 {
-                    if (levels.Contains(log.level))
-                    {
-                        selects.Add(log);
-                    }
+                    selects.Add(log);
                 }
-                Refresh(selects);
             }
+            Refresh(selects);
         }
 
         protected void Refresh(List<Log> logs)
