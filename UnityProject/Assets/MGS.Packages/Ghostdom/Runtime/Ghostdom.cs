@@ -31,9 +31,9 @@ namespace MGS.Ghostdoms
 
         protected List<Vector3> layouts = new List<Vector3>
         {
-            new Vector3(0.15f, 0.2f, 0.25f),
-            new Vector3(0.35f, 0.35f, 0.1f),
-            new Vector3(0.1f, 0.1f, 0.45f)
+            new Vector3(1, 1, 1),
+            new Vector3(2, 2, 0),
+            new Vector3(0, 0, 2)
         };
         protected int layout = 0;
 
@@ -42,8 +42,6 @@ namespace MGS.Ghostdoms
             cerberus.OnHeadShake += Cerberus_OnHeadShake;
             aeacus.OnGOSelected += Aeacus_OnGOSelected;
             minos.OnSizeChanged += Minos_OnSizeChanged;
-
-            FitToLayout(layouts[layout]);
         }
 
         protected void Cerberus_OnHeadShake(Cerberus.HeadID headID)
@@ -59,8 +57,7 @@ namespace MGS.Ghostdoms
                     break;
 
                 case Cerberus.HeadID.Head_Lyre:
-                    var judgment = aeacus.transform.parent.gameObject;
-                    judgment.SetActive(!judgment.activeSelf);
+                    aeacus.transform.parent.gameObject.SetActive(cerberus.IsHeadActive);
                     break;
 
                 case Cerberus.HeadID.Head_Minos:
@@ -98,14 +95,9 @@ namespace MGS.Ghostdoms
 
         protected void FitToLayout(Vector3 layout)
         {
-            var rect = (aeacus.transform.parent as RectTransform).rect;
-            var aeacusWidth = rect.width * layout.x;
-            var rhadamanthysWidth = rect.width * layout.y;
-            aeacus.SetSize(RectTransform.Axis.Horizontal, aeacusWidth);
-            rhadamanthys.SetSize(RectTransform.Axis.Horizontal, rhadamanthysWidth);
-
-            var minosHeight = rect.height * layout.z;
-            minos.SetSize(RectTransform.Axis.Vertical, minosHeight);
+            aeacus.SetSize(RectTransform.Axis.Horizontal, (Window.SizeMode)layout.x);
+            rhadamanthys.SetSize(RectTransform.Axis.Horizontal, (Window.SizeMode)layout.y);
+            minos.SetSize(RectTransform.Axis.Vertical, (Window.SizeMode)layout.z);
         }
     }
 }

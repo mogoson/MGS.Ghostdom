@@ -1,7 +1,7 @@
 /*************************************************************************
  *  Copyright © 2022 Mogoson. All rights reserved.
  *------------------------------------------------------------------------
- *  File         :  LRTPanel.cs
+ *  File         :  Window.cs
  *  Description  :  Null.
  *------------------------------------------------------------------------
  *  Author       :  Mogoson
@@ -15,9 +15,11 @@ using UnityEngine;
 
 namespace MGS.Ghostdoms
 {
-    public class LRTPanel : MonoBehaviour
+    public class Window : MonoBehaviour
     {
-        protected class LRTBtnNames
+        public enum SizeMode { Min, Moderate, Max }
+
+        protected class ToolNames
         {
             public const string Add = "Add";
             public const string Reduce = "Reduce";
@@ -32,8 +34,9 @@ namespace MGS.Ghostdoms
 
         protected virtual void Awake()
         {
-            var toolbar = transform.Find("Toolbar").GetComponent<LRToolbar>();
+            var toolbar = transform.Find("Toolbar").GetComponent<Toolbar>();
             toolbar.OnButtonClick += Toolbar_OnButtonClick;
+            toolbar.OnInputValueChanged += Toolbar_OnInputValueChanged;
 
             InitializeSize();
         }
@@ -42,26 +45,29 @@ namespace MGS.Ghostdoms
         {
             switch (btnName)
             {
-                case LRTBtnNames.Add:
+                case ToolNames.Add:
                     AddSize();
                     break;
 
-                case LRTBtnNames.Reduce:
+                case ToolNames.Reduce:
                     ReduceSize();
                     break;
 
-                case LRTBtnNames.Close:
-                    ClosePanel();
+                case ToolNames.Close:
+                    Close();
                     break;
             }
         }
 
+        protected virtual void Toolbar_OnInputValueChanged(string iptName, string value) { }
+
         protected virtual void InitializeSize()
         {
             var parentWidth = (transform.parent as RectTransform).rect.width;
-            minSize = parentWidth * 0.05f;
-            maxSize = parentWidth * 0.35f;
+            minSize = 200;
+            maxSize = Mathf.Max(parentWidth * 0.35f, minSize);
             stepSize = parentWidth * 0.05f;
+            SetSize(RectTransform.Axis.Horizontal, SizeMode.Moderate);
         }
 
         protected virtual void AddSize()
@@ -82,6 +88,26 @@ namespace MGS.Ghostdoms
             }
         }
 
+        public void SetSize(RectTransform.Axis axis, SizeMode mode)
+        {
+            var size = 0f;
+            switch (mode)
+            {
+                case SizeMode.Min:
+                    size = minSize;
+                    break;
+
+                case SizeMode.Moderate:
+                    size = (minSize + maxSize) * 0.5f;
+                    break;
+
+                case SizeMode.Max:
+                    size = maxSize;
+                    break;
+            }
+            SetSize(axis, size);
+        }
+
         public void SetSize(RectTransform.Axis axis, float size)
         {
             (transform as RectTransform).SetSizeWithCurrentAnchors(axis, size);
@@ -91,7 +117,7 @@ namespace MGS.Ghostdoms
             }
         }
 
-        protected virtual void ClosePanel()
+        protected void Close()
         {
             gameObject.SetActive(false);
         }

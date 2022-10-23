@@ -15,7 +15,7 @@ using System.Collections;
 
 namespace MGS.Ghostdoms
 {
-    public class Rhadamanthys : LRTPanel
+    public class Rhadamanthys : Window
     {
 
     }

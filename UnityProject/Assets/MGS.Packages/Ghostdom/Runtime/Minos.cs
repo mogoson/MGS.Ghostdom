@@ -16,12 +16,13 @@ using UnityEngine.UI;
 
 namespace MGS.Ghostdoms
 {
-    public class Minos : LRTPanel
+    public class Minos : Window
     {
         #region
-        protected class MTBtnNames : LRTBtnNames
+        protected class MToolNames : ToolNames
         {
             public const string Clear = "Clear";
+            public const string Search = "Search";
         }
 
         protected struct Log
@@ -48,10 +49,7 @@ namespace MGS.Ghostdoms
         [SerializeField]
         protected Collector collector;
 
-        [SerializeField]
-        protected InputField searchField;
         protected string keyword = string.Empty;
-
         protected List<Log> logs = new List<Log>();
         protected List<string> levels = new List<string>
         {
@@ -61,16 +59,14 @@ namespace MGS.Ghostdoms
         protected override void Awake()
         {
             base.Awake();
-
-            Application.logMessageReceived += Application_logMessageReceived;
-            searchField.onValueChanged.AddListener(SearchField_OnValueChanged);
+            Application.logMessageReceived += Application_LogMessageReceived;
         }
 
         protected override void Toolbar_OnButtonClick(string btnName)
         {
             switch (btnName)
             {
-                case MTBtnNames.Clear:
+                case MToolNames.Clear:
                     ClearLog();
                     break;
 
@@ -86,15 +82,18 @@ namespace MGS.Ghostdoms
             }
         }
 
-        protected void Application_logMessageReceived(string condition, string stackTrace, LogType type)
+        protected override void Toolbar_OnInputValueChanged(string iptName, string value)
         {
-            AppendLog(type.ToString(), string.Format("{0}\r\n{1}", condition, stackTrace.TrimEnd()));
+            if (iptName == MToolNames.Search)
+            {
+                keyword = value;
+                FilterLog(levels, keyword);
+            }
         }
 
-        protected void SearchField_OnValueChanged(string text)
+        protected void Application_LogMessageReceived(string condition, string stackTrace, LogType type)
         {
-            keyword = text;
-            FilterLog(levels, keyword);
+            AppendLog(type.ToString(), string.Format("{0}\r\n{1}", condition, stackTrace.TrimEnd()));
         }
 
         protected void AppendLog(string level, string message)
@@ -124,10 +123,11 @@ namespace MGS.Ghostdoms
 
         protected void FilterLog(List<string> levels, string keyword)
         {
+            keyword = string.IsNullOrEmpty(keyword) ? keyword : keyword.ToLower();
             var selects = new List<Log>();
             foreach (var log in logs)
             {
-                if (levels.Contains(log.level) && log.message.Contains(keyword))
+                if (levels.Contains(log.level) && log.message.ToLower().Contains(keyword))
                 {
                     selects.Add(log);
                 }
@@ -186,9 +186,10 @@ namespace MGS.Ghostdoms
         protected override void InitializeSize()
         {
             var parentHeight = (transform.parent as RectTransform).rect.height;
-            minSize = parentHeight * 0.05f;
+            minSize = parentHeight * 0.1f;
             maxSize = parentHeight * 0.45f;
             stepSize = parentHeight * 0.05f;
+            SetSize(RectTransform.Axis.Vertical, SizeMode.Moderate);
         }
 
         protected override void AddSize()

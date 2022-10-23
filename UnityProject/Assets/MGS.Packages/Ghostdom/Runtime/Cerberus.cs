@@ -28,7 +28,9 @@ namespace MGS.Ghostdoms
         }
 
         public event Action<HeadID> OnHeadShake;
-        protected bool isActive = false;
+
+        public bool IsHeadActive { get { return isHeadActive; } }
+        protected bool isHeadActive = false;
 
         protected virtual void Awake()
         {
@@ -44,8 +46,8 @@ namespace MGS.Ghostdoms
             var id = (HeadID)Enum.Parse(typeof(HeadID), head.name, true);
             if (id == HeadID.Head_Lyre)
             {
-                isActive = !isActive;
-                ToggleHeads(isActive);
+                isHeadActive = !isHeadActive;
+                ToggleHeads(isHeadActive);
             }
             OnHeadShake.Invoke(id);
         }

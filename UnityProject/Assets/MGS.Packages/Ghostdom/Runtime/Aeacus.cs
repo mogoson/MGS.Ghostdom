@@ -16,15 +16,17 @@ using UnityEngine;
 
 namespace MGS.Ghostdoms
 {
-    public class Aeacus : LRTPanel
+    public class Aeacus : Window
     {
-        protected class ATBtnNames : LRTBtnNames
+        protected class AToolNames : ToolNames
         {
             public const string Refresh = "Refresh";
+            public const string Search = "Search";
         }
 
         [SerializeField]
         protected Collector collector;
+        protected List<GameObject> gos = new List<GameObject>();
 
         public event Action<GameObject, bool> OnGOSelected;
 
@@ -36,7 +38,7 @@ namespace MGS.Ghostdoms
 
         protected override void Toolbar_OnButtonClick(string btnName)
         {
-            if (btnName == ATBtnNames.Refresh)
+            if (btnName == AToolNames.Refresh)
             {
                 Refresh();
             }
@@ -46,21 +48,68 @@ namespace MGS.Ghostdoms
             }
         }
 
-        protected void Refresh()
+        protected override void Toolbar_OnInputValueChanged(string iptName, string value)
         {
-            var gos = Resources.FindObjectsOfTypeAll<Transform>();
-            var topGos = new List<GameObject>();
-            foreach (var go in gos)
+            if (iptName == AToolNames.Search)
             {
-                if (go.hideFlags == HideFlags.None && go.transform.parent == null)
-                {
-                    topGos.Add(go.gameObject);
-                }
+                Refresh(value);
             }
-            Refresh(topGos);
         }
 
-        protected void Refresh(ICollection<GameObject> gos)
+        protected void Refresh()
+        {
+            FindGos();
+            Refresh(string.Empty);
+        }
+
+        protected void FindGos()
+        {
+            gos.Clear();
+            var allGos = Resources.FindObjectsOfTypeAll<GameObject>();
+            foreach (var go in allGos)
+            {
+                if (go.hideFlags == HideFlags.None)
+                {
+                    gos.Add(go.gameObject);
+                }
+            }
+        }
+
+        protected void Refresh(string keyword)
+        {
+            var gos = FilterGos(keyword);
+            var isAllowFold = string.IsNullOrEmpty(keyword);
+            Refresh(gos, isAllowFold);
+        }
+
+        protected List<GameObject> FilterGos(string keyword)
+        {
+            var selects = new List<GameObject>();
+            if (string.IsNullOrEmpty(keyword))
+            {
+                foreach (var go in gos)
+                {
+                    if (go.transform.parent == null)
+                    {
+                        selects.Add(go.gameObject);
+                    }
+                }
+            }
+            else
+            {
+                keyword = keyword.ToLower();
+                foreach (var go in gos)
+                {
+                    if (go.name.ToLower().Contains(keyword))
+                    {
+                        selects.Add(go.gameObject);
+                    }
+                }
+            }
+            return selects;
+        }
+
+        protected void Refresh(ICollection<GameObject> gos, bool isAllowFold)
         {
             collector.RequireItems(gos.Count);
 
@@ -70,7 +119,7 @@ namespace MGS.Ghostdoms
                 var goField = collector.GetItem<GOField>(i);
                 goField.collector.prefab = collector.prefab;
 
-                goField.Refresh(go);
+                goField.Refresh(go, isAllowFold);
                 goField.gameObject.name = go.name;
 
                 goField.OnSelected = GO_OnSelected;

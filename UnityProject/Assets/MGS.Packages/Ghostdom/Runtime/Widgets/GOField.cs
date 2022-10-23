@@ -81,10 +81,10 @@ namespace MGS.Ghostdoms
             }
         }
 
-        public void Refresh(GameObject go)
+        public void Refresh(GameObject go, bool isAllowFold = true)
         {
             this.go = go;
-            var isShowFold = go.transform.childCount > 0;
+            var isShowFold = isAllowFold && go.transform.childCount > 0;
             foldBtn.gameObject.SetActive(isShowFold);
             foldBtn.transform.parent.GetComponent<LayoutGroup>().padding.left = isShowFold ? 0 : 18;
             goToggle.GetComponentInChildren<Text>().text = go.name;
