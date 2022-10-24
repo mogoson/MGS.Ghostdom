@@ -57,8 +57,8 @@ namespace MGS.Ghostdoms
 
                     var child = go.transform.GetChild(i).gameObject;
                     goField.Refresh(child);
-
                     goField.OnSelected = Child_OnSelected;
+
                     goField.gameObject.SetActive(true);
                 }
             }
@@ -91,6 +91,7 @@ namespace MGS.Ghostdoms
             var nameTxt = goToggle.GetComponentInChildren<Text>();
             nameTxt.text = go.name;
             nameTxt.color = go.activeSelf ? Color.white : Color.gray;
+            goToggle.isOn = false;
 
             ToggleChildren(true);
         }

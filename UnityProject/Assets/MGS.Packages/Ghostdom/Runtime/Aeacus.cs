@@ -134,6 +134,8 @@ namespace MGS.Ghostdoms
                 goField.gameObject.SetActive(true);
                 i++;
             }
+
+            GO_OnSelected(null, false);
         }
 
         protected void GO_OnSelected(GameObject go, bool isSelect)
