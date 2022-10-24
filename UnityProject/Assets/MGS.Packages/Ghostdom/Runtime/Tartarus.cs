@@ -10,7 +10,7 @@
  *  Description  :  Initial development version.
  *************************************************************************/
 
-#define GHOSTDOM_ACTIVE
+#define GHOSTDOM_INACTIVE
 
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -28,8 +28,9 @@ namespace MGS.Ghostdoms
             {
                 var prefab = Resources.Load<Ghostdom>("Ghostdom");
                 ghostdom = Object.Instantiate(prefab);
+                ghostdom.name = "Ghostdom";
             }
-            //ghostdom.gameObject.hideFlags = HideFlags.HideInHierarchy;
+            ghostdom.gameObject.hideFlags = HideFlags.HideInHierarchy;
             Object.DontDestroyOnLoad(ghostdom);
 
             var eventSystem = Object.FindObjectOfType<EventSystem>();

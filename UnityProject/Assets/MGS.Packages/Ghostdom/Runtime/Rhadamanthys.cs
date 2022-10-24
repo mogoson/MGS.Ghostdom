@@ -44,44 +44,51 @@ namespace MGS.Ghostdoms
 
         protected void Refresh(string keyword)
         {
-            var cpnts = new List<Component>();
-            var coms = go.GetComponents<Component>();
-            foreach (var cpnt in coms)
+            var objs = new List<Object>();
+            if (go != null)
             {
-                if (cpnt.GetType().Name.ToLower().Contains(keyword))
+                objs.Add(go);
+                var cpnts = go.GetComponents<Component>();
+                foreach (var cpnt in cpnts)
                 {
-                    cpnts.Add(cpnt);
+                    if (cpnt.GetType().Name.ToLower().Contains(keyword))
+                    {
+                        objs.Add(cpnt);
+                    }
                 }
             }
-            Refresh(cpnts);
+            Refresh(objs);
         }
 
-        protected void Refresh(ICollection<Component> cpnts)
+        protected void Refresh(ICollection<Object> objs)
         {
-            collector.RequireItems(cpnts.Count);
+            collector.RequireItems(objs.Count);
 
             var i = 0;
-            foreach (var cpnt in cpnts)
+            foreach (var obj in objs)
             {
                 var item = collector.GetItem<Transform>(i);
-                item.GetChild(0).GetComponent<Text>().text = cpnt.GetType().Name;
-                item.GetChild(1).GetComponent<Text>().text = GetComponentInfo(cpnt);
+                item.GetChild(0).GetComponent<Text>().text = obj.GetType().Name;
+                item.GetChild(1).GetComponent<Text>().text = GetObjectInfo(obj);
                 item.gameObject.SetActive(true);
                 i++;
             }
         }
 
-        protected string GetComponentInfo(Component cpnt)
+        protected string GetObjectInfo(Object obj)
         {
             var info = string.Empty;
-            var properties = cpnt.GetType().GetProperties();
+            var fields = obj.GetType().GetFields();
+            foreach (var field in fields)
+            {
+                try { info += string.Format("{0}: {1}\r\n", field.Name, field.GetValue(obj)); }
+                catch { }
+            }
+
+            var properties = obj.GetType().GetProperties();
             foreach (var propertiy in properties)
             {
-                var propertiyValue = string.Empty;
-                try
-                {
-                    info += string.Format("{0}: {1}\r\n", propertiy.Name, propertiy.GetValue(cpnt, null));
-                }
+                try { info += string.Format("{0}: {1}\r\n", propertiy.Name, propertiy.GetValue(obj, null)); }
                 catch { }
             }
             return info;
