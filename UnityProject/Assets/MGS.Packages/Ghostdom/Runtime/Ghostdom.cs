@@ -77,9 +77,9 @@ namespace MGS.Ghostdoms
             }
         }
 
-        protected void Aeacus_OnGOSelected(GameObject go, bool isSelect)
+        protected void Aeacus_OnGOSelected(GameObject go)
         {
-            Debug.LogFormat("Aeacus_OnGOSelected {0} {1}", go.name, isSelect);
+            rhadamanthys.Refresh(go);
         }
 
         protected void Minos_OnSizeChanged(RectTransform.Axis axis, float size)

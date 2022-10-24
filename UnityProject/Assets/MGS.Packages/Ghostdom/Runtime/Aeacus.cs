@@ -13,6 +13,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MGS.Ghostdoms
 {
@@ -26,21 +27,26 @@ namespace MGS.Ghostdoms
 
         [SerializeField]
         protected Collector collector;
-        protected List<GameObject> gos = new List<GameObject>();
+        protected ToggleGroup group;
 
-        public event Action<GameObject, bool> OnGOSelected;
+        protected List<GameObject> gos = new List<GameObject>();
+        protected string keyword = string.Empty;
+
+        public event Action<GameObject> OnGOSelected;
 
         protected override void Awake()
         {
             base.Awake();
-            Refresh();
+
+            group = collector.GetComponent<ToggleGroup>();
+            Refresh(keyword, true);
         }
 
         protected override void Toolbar_OnButtonClick(string btnName)
         {
             if (btnName == AToolNames.Refresh)
             {
-                Refresh();
+                Refresh(keyword, true);
             }
             else
             {
@@ -52,34 +58,39 @@ namespace MGS.Ghostdoms
         {
             if (iptName == AToolNames.Search)
             {
-                Refresh(value);
+                keyword = string.IsNullOrEmpty(value) ? value : value.ToLower();
+                Refresh(keyword);
             }
         }
 
-        protected void Refresh()
+        protected void Refresh(string keyword, bool reloadGos = false)
         {
-            FindGos();
-            Refresh(string.Empty);
+            if (reloadGos)
+            {
+                ReloadGos();
+            }
+
+            var gos = FilterGos(keyword);
+            var isAllowFold = string.IsNullOrEmpty(keyword);
+            Refresh(gos, isAllowFold);
         }
 
-        protected void FindGos()
+        protected void ReloadGos()
         {
             gos.Clear();
             var allGos = Resources.FindObjectsOfTypeAll<GameObject>();
             foreach (var go in allGos)
             {
-                if (go.hideFlags == HideFlags.None)
+                if (go.hideFlags != HideFlags.None)
                 {
-                    gos.Add(go.gameObject);
+                    continue;
                 }
+                if (go.transform.root.name == "Ghostdom")
+                {
+                    continue;
+                }
+                gos.Add(go.gameObject);
             }
-        }
-
-        protected void Refresh(string keyword)
-        {
-            var gos = FilterGos(keyword);
-            var isAllowFold = string.IsNullOrEmpty(keyword);
-            Refresh(gos, isAllowFold);
         }
 
         protected List<GameObject> FilterGos(string keyword)
@@ -91,18 +102,17 @@ namespace MGS.Ghostdoms
                 {
                     if (go.transform.parent == null)
                     {
-                        selects.Add(go.gameObject);
+                        selects.Add(go);
                     }
                 }
             }
             else
             {
-                keyword = keyword.ToLower();
                 foreach (var go in gos)
                 {
                     if (go.name.ToLower().Contains(keyword))
                     {
-                        selects.Add(go.gameObject);
+                        selects.Add(go);
                     }
                 }
             }
@@ -120,8 +130,6 @@ namespace MGS.Ghostdoms
                 goField.collector.prefab = collector.prefab;
 
                 goField.Refresh(go, isAllowFold);
-                goField.gameObject.name = go.name;
-
                 goField.OnSelected = GO_OnSelected;
                 goField.gameObject.SetActive(true);
                 i++;
@@ -130,9 +138,18 @@ namespace MGS.Ghostdoms
 
         protected void GO_OnSelected(GameObject go, bool isSelect)
         {
+            if (!isSelect)
+            {
+                if (group.AnyTogglesOn())
+                {
+                    return;
+                }
+                go = null;
+            }
+
             if (OnGOSelected != null)
             {
-                OnGOSelected.Invoke(go, isSelect);
+                OnGOSelected.Invoke(go);
             }
         }
     }

@@ -86,7 +86,7 @@ namespace MGS.Ghostdoms
         {
             if (iptName == MToolNames.Search)
             {
-                keyword = value;
+                keyword = string.IsNullOrEmpty(value) ? value : value.ToLower();
                 FilterLog(levels, keyword);
             }
         }
@@ -123,7 +123,6 @@ namespace MGS.Ghostdoms
 
         protected void FilterLog(List<string> levels, string keyword)
         {
-            keyword = string.IsNullOrEmpty(keyword) ? keyword : keyword.ToLower();
             var selects = new List<Log>();
             foreach (var log in logs)
             {

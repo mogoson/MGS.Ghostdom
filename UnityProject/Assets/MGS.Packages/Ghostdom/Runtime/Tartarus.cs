@@ -23,22 +23,22 @@ namespace MGS.Ghostdoms
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Awake()
         {
-            var eyes = Object.FindObjectOfType<Ghostdom>();
-            if (eyes == null)
+            var ghostdom = Object.FindObjectOfType<Ghostdom>();
+            if (ghostdom == null)
             {
                 var prefab = Resources.Load<Ghostdom>("Ghostdom");
-                eyes = Object.Instantiate(prefab);
+                ghostdom = Object.Instantiate(prefab);
             }
-            //eyes.gameObject.hideFlags = HideFlags.HideInHierarchy;
-            Object.DontDestroyOnLoad(eyes);
+            //ghostdom.gameObject.hideFlags = HideFlags.HideInHierarchy;
+            Object.DontDestroyOnLoad(ghostdom);
 
-            var eSys = Object.FindObjectOfType<EventSystem>();
-            if (eSys == null)
+            var eventSystem = Object.FindObjectOfType<EventSystem>();
+            if (eventSystem == null)
             {
-                eSys = new GameObject("EventSystem").AddComponent<EventSystem>();
-                eSys.gameObject.AddComponent<StandaloneInputModule>();
+                eventSystem = new GameObject("EventSystem").AddComponent<EventSystem>();
+                eventSystem.gameObject.AddComponent<StandaloneInputModule>();
             }
-            Object.DontDestroyOnLoad(eSys);
+            Object.DontDestroyOnLoad(eventSystem);
         }
 #endif
     }

@@ -57,7 +57,6 @@ namespace MGS.Ghostdoms
 
                     var child = go.transform.GetChild(i).gameObject;
                     goField.Refresh(child);
-                    goField.gameObject.name = child.name;
 
                     goField.OnSelected = Child_OnSelected;
                     goField.gameObject.SetActive(true);
@@ -85,9 +84,14 @@ namespace MGS.Ghostdoms
         {
             this.go = go;
             var isShowFold = isAllowFold && go.transform.childCount > 0;
+
             foldBtn.gameObject.SetActive(isShowFold);
             foldBtn.transform.parent.GetComponent<LayoutGroup>().padding.left = isShowFold ? 0 : 18;
-            goToggle.GetComponentInChildren<Text>().text = go.name;
+
+            var nameTxt = goToggle.GetComponentInChildren<Text>();
+            nameTxt.text = go.name;
+            nameTxt.color = go.activeSelf ? Color.white : Color.gray;
+
             ToggleChildren(true);
         }
 

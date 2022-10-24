@@ -1,7 +1,7 @@
 /*************************************************************************
  *  Copyright © 2022 Mogoson. All rights reserved.
  *------------------------------------------------------------------------
- *  File         :  InputClearField.cs
+ *  File         :  SearchField.cs
  *  Description  :  Null.
  *------------------------------------------------------------------------
  *  Author       :  Mogoson
@@ -15,7 +15,7 @@ using UnityEngine.UI;
 
 namespace MGS.Ghostdoms
 {
-    public class InputClearField : MonoBehaviour
+    public class SearchField : MonoBehaviour
     {
         protected virtual void Awake()
         {
