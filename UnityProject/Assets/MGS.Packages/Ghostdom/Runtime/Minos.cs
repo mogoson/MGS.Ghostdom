@@ -208,6 +208,17 @@ namespace MGS.Ghostdoms
                 SetSize(RectTransform.Axis.Vertical, height - stepSize);
             }
         }
+
+        public override void Toggle(bool isActive)
+        {
+            var size = 0f;
+            if (isActive)
+            {
+                size = (transform as RectTransform).rect.height;
+            }
+            gameObject.SetActive(isActive);
+            InvokeOnSizeChanged(RectTransform.Axis.Vertical, size);
+        }
         #endregion
     }
 }

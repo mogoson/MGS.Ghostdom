@@ -49,11 +49,11 @@ namespace MGS.Ghostdoms
             switch (headID)
             {
                 case Cerberus.HeadID.Head_Aeacus:
-                    aeacus.gameObject.SetActive(!aeacus.gameObject.activeSelf);
+                    aeacus.Toggle(!aeacus.gameObject.activeSelf);
                     break;
 
                 case Cerberus.HeadID.Head_Rhadamanthys:
-                    rhadamanthys.gameObject.SetActive(!rhadamanthys.gameObject.activeSelf);
+                    rhadamanthys.Toggle(!rhadamanthys.gameObject.activeSelf);
                     break;
 
                 case Cerberus.HeadID.Head_Lyre:
@@ -61,7 +61,7 @@ namespace MGS.Ghostdoms
                     break;
 
                 case Cerberus.HeadID.Head_Minos:
-                    minos.gameObject.SetActive(!minos.gameObject.activeSelf);
+                    minos.Toggle(!minos.gameObject.activeSelf);
                     break;
 
                 case Cerberus.HeadID.Head_Trident:

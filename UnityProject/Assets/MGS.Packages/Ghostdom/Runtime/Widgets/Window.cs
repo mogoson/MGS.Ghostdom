@@ -54,7 +54,7 @@ namespace MGS.Ghostdoms
                     break;
 
                 case ToolNames.Close:
-                    Close();
+                    Toggle(false);
                     break;
             }
         }
@@ -111,15 +111,26 @@ namespace MGS.Ghostdoms
         public void SetSize(RectTransform.Axis axis, float size)
         {
             (transform as RectTransform).SetSizeWithCurrentAnchors(axis, size);
+            InvokeOnSizeChanged(axis, size);
+        }
+
+        protected void InvokeOnSizeChanged(RectTransform.Axis axis, float size)
+        {
             if (OnSizeChanged != null)
             {
                 OnSizeChanged.Invoke(axis, size);
             }
         }
 
-        protected void Close()
+        public virtual void Toggle(bool isActive)
         {
-            gameObject.SetActive(false);
+            var size = 0f;
+            if (isActive)
+            {
+                size = (transform as RectTransform).rect.width;
+            }
+            gameObject.SetActive(isActive);
+            InvokeOnSizeChanged(RectTransform.Axis.Horizontal, size);
         }
     }
 }
