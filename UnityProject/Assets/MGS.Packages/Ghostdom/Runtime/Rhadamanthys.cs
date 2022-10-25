@@ -77,21 +77,37 @@ namespace MGS.Ghostdoms
 
         protected string GetObjectInfo(Object obj)
         {
-            var info = string.Empty;
+            var lines = new List<string>();
+
             var fields = obj.GetType().GetFields();
             foreach (var field in fields)
             {
-                try { info += string.Format("{0}: {1}\r\n", field.Name, field.GetValue(obj)); }
+                if (field.FieldType == typeof(Matrix4x4))
+                {
+                    continue;
+                }
+                try
+                {
+                    lines.Add(string.Format("{0}: {1}", field.Name, field.GetValue(obj)));
+                }
                 catch { }
             }
 
             var properties = obj.GetType().GetProperties();
             foreach (var propertiy in properties)
             {
-                try { info += string.Format("{0}: {1}\r\n", propertiy.Name, propertiy.GetValue(obj, null)); }
+                if (propertiy.PropertyType == typeof(Matrix4x4))
+                {
+                    continue;
+                }
+                try
+                {
+                    lines.Add(string.Format("{0}: {1}", propertiy.Name, propertiy.GetValue(obj, null)));
+                }
                 catch { }
             }
-            return info;
+
+            return string.Join("\r\n", lines.ToArray());
         }
 
         protected override void Toolbar_OnButtonClick(string btnName)
