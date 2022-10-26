@@ -67,9 +67,8 @@ namespace MGS.Ghostdoms
             var i = 0;
             foreach (var obj in objs)
             {
-                var item = collector.GetItem<Transform>(i);
-                item.GetChild(0).GetComponent<Text>().text = obj.GetType().Name;
-                item.GetChild(1).GetComponent<Text>().text = GetObjectInfo(obj);
+                var item = collector.GetItem<ObjectField>(i);
+                item.Refresh(obj);
                 item.gameObject.SetActive(true);
                 i++;
             }
