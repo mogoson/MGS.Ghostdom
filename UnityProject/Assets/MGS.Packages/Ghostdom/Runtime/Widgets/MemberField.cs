@@ -2,7 +2,7 @@
 /*************************************************************************
  *  Copyright © 2022 Mogoson. All rights reserved.
  *------------------------------------------------------------------------
- *  File         :  PropertyField.cs
+ *  File         :  MemberField.cs
  *  Description  :  Null.
  *------------------------------------------------------------------------
  *  Author       :  Mogoson
@@ -18,7 +18,7 @@ using UnityEngine.UI;
 
 namespace MGS.Ghostdoms
 {
-    public class PropertyField : MonoBehaviour
+    public class MemberField : MonoBehaviour
     {
         protected enum InputType
         {
@@ -38,8 +38,8 @@ namespace MGS.Ghostdoms
         [SerializeField]
         protected int reserved = 1;
 
-        public Action<PropertyInfo, object> OnValueChanged;
-        protected PropertyInfo property;
+        public Action<MemberInfo, object> OnValueChanged;
+        protected MemberInfo member;
 
         protected virtual void Reset()
         {
@@ -47,36 +47,48 @@ namespace MGS.Ghostdoms
             inputs = transform.parent.GetChild(0);
         }
 
-        public void Refresh(PropertyInfo property, object value)
+        public void Refresh(MemberInfo member, object value)
         {
-            this.property = property;
-            text.text = property.Name;
+            this.member = member;
+            text.text = member.Name;
 
             var interactable = false;
-            var iptType = ResolveInput(property, out interactable);
+            var iptType = ResolveInput(member, out interactable);
             RefreshInput(iptType, value, interactable);
         }
 
-        protected InputType ResolveInput(PropertyInfo property, out bool interactable)
+        protected InputType ResolveInput(MemberInfo member, out bool interactable)
         {
-            interactable = property.CanWrite;
+            interactable = true;
+            Type type = null;
+            if (member.MemberType == MemberTypes.Field)
+            {
+                var field = (FieldInfo)member;
+                interactable = field.IsPublic;
+                type = field.FieldType;
+            }
+            else if (member.MemberType == MemberTypes.Property)
+            {
+                var property = (PropertyInfo)member;
+                interactable = property.CanWrite;
+                type = property.PropertyType;
+            }
 
             var iptType = InputType.InputText;
-            if (property.PropertyType == typeof(string))
-            { }
-            else if (property.PropertyType == typeof(int))
+            if (type == typeof(string)) { }
+            else if (type == typeof(int))
             {
                 iptType = InputType.InputInt;
             }
-            else if (property.PropertyType == typeof(float) || property.PropertyType == typeof(double))
+            else if (type == typeof(float) || type == typeof(double))
             {
                 iptType = InputType.InputFloat;
             }
-            else if (property.PropertyType == typeof(Vector2))
+            else if (type == typeof(Vector2))
             {
                 iptType = InputType.InputVector2;
             }
-            else if (property.PropertyType == typeof(Vector3))
+            else if (type == typeof(Vector3))
             {
                 iptType = InputType.InputVector3;
             }
@@ -100,7 +112,8 @@ namespace MGS.Ghostdoms
             var items = transform.childCount - reserved;
             while (items > 0)
             {
-                Destroy(transform.GetChild(items).gameObject);
+                var item = transform.GetChild(reserved).gameObject;
+                DestroyImmediate(item);
                 items--;
             }
 
@@ -113,7 +126,7 @@ namespace MGS.Ghostdoms
         {
             if (OnValueChanged != null)
             {
-                OnValueChanged(property, value);
+                OnValueChanged(member, value);
             }
         }
     }

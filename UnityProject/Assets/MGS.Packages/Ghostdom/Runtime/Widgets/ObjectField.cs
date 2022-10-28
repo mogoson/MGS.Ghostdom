@@ -10,6 +10,7 @@
  *  Description  :  Initial development version.
  *************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
@@ -20,7 +21,7 @@ namespace MGS.Ghostdoms
     public class ObjectField : MonoBehaviour
     {
         [SerializeField]
-        protected Text nameTxt;
+        protected Text text;
 
         [SerializeField]
         protected Collector collector;
@@ -29,51 +30,77 @@ namespace MGS.Ghostdoms
         public void Refresh(object obj)
         {
             this.obj = obj;
-            nameTxt.text = obj.GetType().Name;
-            var properties = obj.GetType().GetProperties();
-            Refresh(properties);
+            text.text = obj.GetType().Name;
+            Refresh(obj.GetType().GetMembers());
         }
 
-        protected void Refresh(ICollection<PropertyInfo> properties)
+        protected void Refresh(ICollection<MemberInfo> members)
         {
-            var vs = new List<object>();
-            var ps = new List<PropertyInfo>();
-            foreach (var property in properties)
+            var selects = new List<MemberInfo>();
+            var values = new List<object>();
+            foreach (var member in members)
             {
-                if (property.PropertyType == typeof(Matrix4x4))
-                {
-                    continue;
-                }
-
+                object value = null;
                 try
                 {
-                    vs.Add(property.GetValue(obj, null));
-                    ps.Add(property);
+                    if (member.MemberType == MemberTypes.Field)
+                    {
+                        var field = (FieldInfo)member;
+                        if (field.FieldType == typeof(Matrix4x4))
+                        {
+                            continue;
+                        }
+                        value = field.GetValue(obj);
+                    }
+                    else if (member.MemberType == MemberTypes.Property)
+                    {
+                        var property = (PropertyInfo)member;
+                        if (property.PropertyType == typeof(Matrix4x4))
+                        {
+                            continue;
+                        }
+                        value = property.GetValue(obj, null);
+                    }
+                    else { continue; }
                 }
                 catch { continue; }
+
+                selects.Add(member);
+                values.Add(value);
             }
 
-            collector.RequireItems(ps.Count);
+            collector.RequireItems(selects.Count);
 
             var i = 0;
-            foreach (var property in ps)
+            foreach (var member in selects)
             {
-                var value = property.GetValue(obj, null);
-                var item = collector.GetItem<PropertyField>(i);
-                item.Refresh(property, vs[i]);
-                item.OnValueChanged = Property_OnValueChanged;
+                var item = collector.GetItem<MemberField>(i);
+                item.Refresh(member, values[i]);
+                item.OnValueChanged = Member_OnValueChanged;
                 item.gameObject.SetActive(true);
                 i++;
             }
         }
 
-        protected void Property_OnValueChanged(PropertyInfo property, object value)
+        protected void Member_OnValueChanged(MemberInfo member, object value)
         {
             try
             {
-                property.SetValue(obj, value, null);
+                if (member.MemberType == MemberTypes.Field)
+                {
+                    var field = (FieldInfo)member;
+                    field.SetValue(obj, value);
+                }
+                else if (member.MemberType == MemberTypes.Property)
+                {
+                    var property = (PropertyInfo)member;
+                    property.SetValue(obj, value, null);
+                }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+            }
         }
     }
 }

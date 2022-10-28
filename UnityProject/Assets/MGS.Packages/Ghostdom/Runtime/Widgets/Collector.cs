@@ -29,7 +29,8 @@ namespace MGS.Ghostdoms
             var items = locker.childCount - reserved;
             while (items > count)
             {
-                Destroy(locker.GetChild(items).gameObject);
+                var item = locker.GetChild(reserved).gameObject;
+                DestroyImmediate(item);
                 items--;
             }
             while (items < count)

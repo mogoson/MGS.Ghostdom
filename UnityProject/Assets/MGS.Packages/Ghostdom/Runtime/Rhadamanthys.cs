@@ -43,7 +43,7 @@ namespace MGS.Ghostdoms
 
         protected void Refresh(string keyword)
         {
-            var objs = new List<Object>();
+            var objs = new List<object>();
             if (go != null)
             {
                 if (go.GetType().Name.ToLower().Contains(keyword))
@@ -54,6 +54,11 @@ namespace MGS.Ghostdoms
                 var cpnts = go.GetComponents<Component>();
                 foreach (var cpnt in cpnts)
                 {
+                    if (cpnt == null)
+                    {
+                        Debug.LogWarningFormat("A Component is missing in the {0}.", go.name);
+                        continue;
+                    }
                     if (cpnt.GetType().Name.ToLower().Contains(keyword))
                     {
                         objs.Add(cpnt);
@@ -63,7 +68,7 @@ namespace MGS.Ghostdoms
             Refresh(objs);
         }
 
-        protected void Refresh(ICollection<Object> objs)
+        protected void Refresh(ICollection<object> objs)
         {
             collector.RequireItems(objs.Count);
 
