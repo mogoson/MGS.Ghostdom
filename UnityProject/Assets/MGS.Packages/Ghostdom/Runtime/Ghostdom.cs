@@ -39,6 +39,8 @@ namespace MGS.Ghostdoms
 
         protected virtual void Awake()
         {
+            minos.Initialize();
+
             cerberus.OnHeadShake += Cerberus_OnHeadShake;
             aeacus.OnGOSelected += Aeacus_OnGOSelected;
             minos.OnSizeChanged += Minos_OnSizeChanged;

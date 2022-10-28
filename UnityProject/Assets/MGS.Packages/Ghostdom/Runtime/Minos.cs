@@ -10,6 +10,7 @@
  *  Description  :  Initial development version.
  *************************************************************************/
 
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -47,6 +48,9 @@ namespace MGS.Ghostdoms
 
         #region
         [SerializeField]
+        protected ScrollRect scroll;
+
+        [SerializeField]
         protected Collector collector;
 
         protected string keyword = string.Empty;
@@ -55,12 +59,6 @@ namespace MGS.Ghostdoms
         {
             LogLevel.Log, LogLevel.Warning, LogLevel.Error
         };
-
-        protected override void Awake()
-        {
-            base.Awake();
-            Application.logMessageReceived += Application_LogMessageReceived;
-        }
 
         protected override void Toolbar_OnButtonClick(string btnName)
         {
@@ -91,6 +89,11 @@ namespace MGS.Ghostdoms
             }
         }
 
+        public void Initialize()
+        {
+            Application.logMessageReceived += Application_LogMessageReceived;
+        }
+
         protected void Application_LogMessageReceived(string condition, string stackTrace, LogType type)
         {
             AppendLog(type.ToString(), string.Format("{0}\r\n{1}", condition, stackTrace.TrimEnd()));
@@ -105,7 +108,14 @@ namespace MGS.Ghostdoms
             {
                 var txt = collector.CreateItem<Text>();
                 RefreshItem(txt, log);
+                StartCoroutine(DelayPullScrollPosition());
             }
+        }
+
+        IEnumerator DelayPullScrollPosition()
+        {
+            yield return null;
+            scroll.verticalNormalizedPosition = 0;
         }
 
         protected void FilterLevel(string level)
