@@ -1,12 +1,13 @@
-﻿/*************************************************************************
- *  Copyright © #COPYRIGHTYEAR# Mogoson. All rights reserved.
+﻿
+/*************************************************************************
+ *  Copyright © 2022 Mogoson. All rights reserved.
  *------------------------------------------------------------------------
  *  File         :  PropertyField.cs
  *  Description  :  Null.
  *------------------------------------------------------------------------
  *  Author       :  Mogoson
  *  Version      :  1.0.0
- *  Date         :  #CREATEDATE#
+ *  Date         :  10/27/2022
  *  Description  :  Initial development version.
  *************************************************************************/
 
@@ -19,42 +20,101 @@ namespace MGS.Ghostdoms
 {
     public class PropertyField : MonoBehaviour
     {
-        [SerializeField]
-        protected Text nameTxt;
+        protected enum InputType
+        {
+            InputText,
+            InputInt,
+            InputFloat,
+            InputVector2,
+            InputVector3
+        }
 
         [SerializeField]
-        protected RectTransform input1;
+        protected Text text;
 
         [SerializeField]
-        protected RectTransform input2;
+        protected Transform inputs;
 
         [SerializeField]
-        protected RectTransform input3;
+        protected int reserved = 1;
 
         public Action<PropertyInfo, object> OnValueChanged;
         protected PropertyInfo property;
 
-        protected virtual void Awake()
+        protected virtual void Reset()
         {
-            var inputs = GetComponentsInChildren<InputField>();
-            foreach (var input in inputs)
-            {
-                input.onValueChanged.AddListener((value) => Input_OnValueChanged(input.name, value));
-            }
+            text = GetComponentInChildren<Text>(true);
+            inputs = transform.parent.GetChild(0);
         }
 
-        protected void Input_OnValueChanged(string iptName, string value)
+        public void Refresh(PropertyInfo property, object value)
+        {
+            this.property = property;
+            text.text = property.Name;
+
+            var interactable = false;
+            var iptType = ResolveInput(property, out interactable);
+            RefreshInput(iptType, value, interactable);
+        }
+
+        protected InputType ResolveInput(PropertyInfo property, out bool interactable)
+        {
+            interactable = property.CanWrite;
+
+            var iptType = InputType.InputText;
+            if (property.PropertyType == typeof(string))
+            { }
+            else if (property.PropertyType == typeof(int))
+            {
+                iptType = InputType.InputInt;
+            }
+            else if (property.PropertyType == typeof(float) || property.PropertyType == typeof(double))
+            {
+                iptType = InputType.InputFloat;
+            }
+            else if (property.PropertyType == typeof(Vector2))
+            {
+                iptType = InputType.InputVector2;
+            }
+            else if (property.PropertyType == typeof(Vector3))
+            {
+                iptType = InputType.InputVector3;
+            }
+            else
+            {
+                interactable = false;
+            }
+            return iptType;
+        }
+
+        protected void RefreshInput(InputType inputType, object value, bool interactable)
+        {
+            var input = RefreshInput(inputType);
+            input.OnValueChanged += Input_OnValueChanged;
+            input.Refresh(value, interactable);
+            input.gameObject.SetActive(true);
+        }
+
+        protected InputText RefreshInput(InputType inputType)
+        {
+            var items = transform.childCount - reserved;
+            while (items > 0)
+            {
+                Destroy(transform.GetChild(items).gameObject);
+                items--;
+            }
+
+            var index = (int)inputType;
+            var prefab = inputs.GetChild(index).gameObject;
+            return Instantiate(prefab, transform).GetComponent<InputText>();
+        }
+
+        protected void Input_OnValueChanged(object value)
         {
             if (OnValueChanged != null)
             {
-                OnValueChanged.Invoke(property, value);
+                OnValueChanged(property, value);
             }
-        }
-
-        public void Refresh(PropertyInfo property)
-        {
-            this.property = property;
-            nameTxt.text = property.Name;
         }
     }
 }

@@ -12,7 +12,6 @@
 
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace MGS.Ghostdoms
 {
@@ -47,7 +46,11 @@ namespace MGS.Ghostdoms
             var objs = new List<Object>();
             if (go != null)
             {
-                objs.Add(go);
+                if (go.GetType().Name.ToLower().Contains(keyword))
+                {
+                    objs.Add(go);
+                }
+
                 var cpnts = go.GetComponents<Component>();
                 foreach (var cpnt in cpnts)
                 {
@@ -72,41 +75,6 @@ namespace MGS.Ghostdoms
                 item.gameObject.SetActive(true);
                 i++;
             }
-        }
-
-        protected string GetObjectInfo(Object obj)
-        {
-            var lines = new List<string>();
-
-            var fields = obj.GetType().GetFields();
-            foreach (var field in fields)
-            {
-                if (field.FieldType == typeof(Matrix4x4))
-                {
-                    continue;
-                }
-                try
-                {
-                    lines.Add(string.Format("{0}: {1}", field.Name, field.GetValue(obj)));
-                }
-                catch { }
-            }
-
-            var properties = obj.GetType().GetProperties();
-            foreach (var propertiy in properties)
-            {
-                if (propertiy.PropertyType == typeof(Matrix4x4))
-                {
-                    continue;
-                }
-                try
-                {
-                    lines.Add(string.Format("{0}: {1}", propertiy.Name, propertiy.GetValue(obj, null)));
-                }
-                catch { }
-            }
-
-            return string.Join("\r\n", lines.ToArray());
         }
 
         protected override void Toolbar_OnButtonClick(string btnName)

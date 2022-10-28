@@ -1,12 +1,12 @@
 ﻿/*************************************************************************
- *  Copyright © #COPYRIGHTYEAR# Mogoson. All rights reserved.
+ *  Copyright © 2022 Mogoson. All rights reserved.
  *------------------------------------------------------------------------
- *  File         :  CompntField.cs
+ *  File         :  ObjectField.cs
  *  Description  :  Null.
  *------------------------------------------------------------------------
  *  Author       :  Mogoson
  *  Version      :  1.0.0
- *  Date         :  #CREATEDATE#
+ *  Date         :  10/27/2022
  *  Description  :  Initial development version.
  *************************************************************************/
 
@@ -24,9 +24,9 @@ namespace MGS.Ghostdoms
 
         [SerializeField]
         protected Collector collector;
-        protected Object obj;
+        protected object obj;
 
-        public void Refresh(Object obj)
+        public void Refresh(object obj)
         {
             this.obj = obj;
             nameTxt.text = obj.GetType().Name;
@@ -36,13 +36,31 @@ namespace MGS.Ghostdoms
 
         protected void Refresh(ICollection<PropertyInfo> properties)
         {
-            collector.RequireItems(properties.Count);
-
-            var i = 0;
+            var vs = new List<object>();
+            var ps = new List<PropertyInfo>();
             foreach (var property in properties)
             {
+                if (property.PropertyType == typeof(Matrix4x4))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    vs.Add(property.GetValue(obj, null));
+                    ps.Add(property);
+                }
+                catch { continue; }
+            }
+
+            collector.RequireItems(ps.Count);
+
+            var i = 0;
+            foreach (var property in ps)
+            {
+                var value = property.GetValue(obj, null);
                 var item = collector.GetItem<PropertyField>(i);
-                item.Refresh(property);
+                item.Refresh(property, vs[i]);
                 item.OnValueChanged = Property_OnValueChanged;
                 item.gameObject.SetActive(true);
                 i++;
@@ -51,7 +69,11 @@ namespace MGS.Ghostdoms
 
         protected void Property_OnValueChanged(PropertyInfo property, object value)
         {
-            property.SetValue(obj, value, null);
+            try
+            {
+                property.SetValue(obj, value, null);
+            }
+            catch { }
         }
     }
 }

@@ -21,9 +21,12 @@ namespace MGS.Ghostdoms
         [SerializeField]
         protected Transform locker;
 
+        [SerializeField]
+        protected int reserved = 1;
+
         public void RequireItems(int count)
         {
-            var items = locker.childCount - 1;
+            var items = locker.childCount - reserved;
             while (items > count)
             {
                 Destroy(locker.GetChild(items).gameObject);
@@ -48,7 +51,7 @@ namespace MGS.Ghostdoms
 
         public GameObject GetItem(int index)
         {
-            return locker.GetChild(index + 1).gameObject;
+            return locker.GetChild(index + reserved).gameObject;
         }
 
         public T GetItem<T>(int index)
