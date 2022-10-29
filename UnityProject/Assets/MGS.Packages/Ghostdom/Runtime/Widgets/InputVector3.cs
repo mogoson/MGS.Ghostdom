@@ -19,7 +19,7 @@ namespace MGS.Ghostdoms
         protected override object OnInputValueChanged(string iptName, string text)
         {
             var newValue = 0f;
-            if (string.IsNullOrEmpty(text) || text == "-") { }
+            if (string.IsNullOrEmpty(text) || text == MINUS) { }
             else
             {
                 try

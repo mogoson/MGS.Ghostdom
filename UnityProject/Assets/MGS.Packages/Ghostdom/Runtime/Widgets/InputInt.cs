@@ -18,7 +18,6 @@ namespace MGS.Ghostdoms
     {
         protected override void OnInitInputField(InputField input)
         {
-            base.OnInitInputField(input);
             input.contentType = InputField.ContentType.IntegerNumber;
         }
 

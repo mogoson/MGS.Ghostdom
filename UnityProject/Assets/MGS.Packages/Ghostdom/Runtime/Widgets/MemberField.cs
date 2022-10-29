@@ -22,6 +22,7 @@ namespace MGS.Ghostdoms
     {
         protected enum InputType
         {
+            InputBool,
             InputText,
             InputInt,
             InputFloat,
@@ -75,7 +76,14 @@ namespace MGS.Ghostdoms
             }
 
             var iptType = InputType.InputText;
-            if (type == typeof(string)) { }
+            if (type == typeof(bool))
+            {
+                iptType = InputType.InputBool;
+            }
+            else if (type == typeof(string))
+            {
+                iptType = InputType.InputText;
+            }
             else if (type == typeof(int))
             {
                 iptType = InputType.InputInt;
@@ -107,7 +115,7 @@ namespace MGS.Ghostdoms
             input.gameObject.SetActive(true);
         }
 
-        protected InputText RefreshInput(InputType inputType)
+        protected InputBehaviour RefreshInput(InputType inputType)
         {
             var items = transform.childCount - reserved;
             while (items > 0)
@@ -119,7 +127,7 @@ namespace MGS.Ghostdoms
 
             var index = (int)inputType;
             var prefab = inputs.GetChild(index).gameObject;
-            return Instantiate(prefab, transform).GetComponent<InputText>();
+            return Instantiate(prefab, transform).GetComponent<InputBehaviour>();
         }
 
         protected void Input_OnValueChanged(object value)
