@@ -10,7 +10,6 @@
  *  Description  :  Initial development version.
  *************************************************************************/
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -108,14 +107,8 @@ namespace MGS.Ghostdoms
             {
                 var txt = collector.CreateItem<Text>();
                 RefreshItem(txt, log);
-                StartCoroutine(DelayPullScrollPosition());
+                scroll.verticalNormalizedPosition = 0;
             }
-        }
-
-        IEnumerator DelayPullScrollPosition()
-        {
-            yield return null;
-            scroll.verticalNormalizedPosition = 0;
         }
 
         protected void FilterLevel(string level)
