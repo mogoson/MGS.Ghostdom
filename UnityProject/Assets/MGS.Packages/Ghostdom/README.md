@@ -5,6 +5,10 @@
 ## Summary
 - Display / Modify Game Object hierarchy tree, properties and Application Log by scene UI runtime to help analyze program bug.
 
+## Version
+
+- 0.1.0
+
 ## Environment
 - Unity 5.6 or above.
 - .Net Framework 3.5 or above.
